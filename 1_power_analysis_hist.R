@@ -107,7 +107,15 @@ for (i in seq_along(ids)) {
   info[[i]] <- list(model = summary(mods[[i]]))
   
   #  save results
-  saveRDS(sum_res, file = paste0("rds/ospar_sum_res_hist", names(mods)[[i]] , ".rds"))
+  saveRDS(sum_res, file = paste0("rds/ospar_sum_res_hist_", names(mods)[[i]] , ".rds"))
+  # extract sigma
+  sigma_value <- summary(mods[[i]])$sigma
+  
+  # save sigma
+  saveRDS(
+    sigma_value,
+    file = paste0("rds/ospar_sigma_hist_", names(mods)[[i]], ".rds")
+  )
 }
 
 ###################################
@@ -199,7 +207,12 @@ for (i in seq_along(ids)) {
   info[[i]] <- list(model = summary(mods[[i]]))
   
   #  save results
-  saveRDS(sum_res, file = paste0("rds/hp_sum_res_hist", names(mods)[[i]] , ".rds"))
+  saveRDS(sum_res, file = paste0("rds/hp_sum_res_hist_", names(mods)[[i]] , ".rds"))
+  
+  # extract sigma
+  sigma_value <- summary(mods[[i]])$sigma
+  saveRDS(sigma_value, file = paste0("rds/hp_sigma_hist_", names(mods)[[i]], ".rds"))
+  
 }
 
 ###################################
@@ -260,3 +273,6 @@ dev.off()
 
 #  save results
 saveRDS(sum_res, file = "rds/all_sum_res_hist.rds")
+sigma_value <- summary(mods)$sigma
+saveRDS(sigma_value, file = "rds/all_sigma_hist.rds")
+

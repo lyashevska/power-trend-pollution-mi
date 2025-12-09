@@ -27,8 +27,8 @@ mods <- list()
 # list to keep info
 info <- vector('list', length(ids))
 
-# for (i in seq_along(ids)) {
-  for (i in 1) {
+  for (i in seq_along(ids)) {
+#  for (i in 1) {
   print(ids[i])
   temp <- data[data$Ospar.AA == ids[i],]
   
@@ -51,6 +51,9 @@ info <- vector('list', length(ids))
   names(mods)[[i]] <- unique(temp$Ospar.AA)
   beta <- coef(mods[[i]])
   nsim <- 1000
+  
+  # print sigma
+  print(paste("Residual SD (sigma) for", names(mods)[[i]], "=", round(summary(mods[[i]])$sigma, 4)))
   
   all_res <- expand.grid(
     ## sampling frequency
@@ -135,6 +138,9 @@ info <- vector('list', length(ids))
   
   #  save results
   saveRDS(sum_res, file = paste0("rds/ospar_sum_res_", names(mods)[[i]] , ".rds"))
+  # print sigma
+  sigma_value <- summary(mods[[i]])$sigma
+  saveRDS(sigma_value, file = paste0("rds/ospar_sigma_", names(mods)[[i]], ".rds"))
 }
 
 ###################################
@@ -251,6 +257,10 @@ for (i in seq_along(ids)) {
   
   #  save results
   saveRDS(sum_res, file = paste0("rds/hp_sum_res_", names(mods)[[i]] , ".rds"))
+  # print sigma
+  sigma_value <- summary(mods[[i]])$sigma
+  saveRDS(sigma_value, file = paste0("rds/hp_sigma_", names(mods)[[i]], ".rds"))
+  
 }
 
 ###################################
@@ -346,6 +356,9 @@ dev.off()
 
 #  save results
 saveRDS(sum_res, file = "rds/all_sum_res.rds")
+# print sigma
+sigma_value <- summary(mods)$sigma
+saveRDS(sigma_value, file = "rds/all_sigma.rds")
 
 end_time <- Sys.time()
 end_time - start_time
