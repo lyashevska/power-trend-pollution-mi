@@ -75,7 +75,7 @@ names(df)
 
 df <- subset(
   df,
-    Year <= 2017
+   Year <= 2017
 )
 
 calc_summary <- function(d){
@@ -84,10 +84,13 @@ calc_summary <- function(d){
   
   mean_cb <- mean(d$TotalCBs, na.rm = TRUE)
   sd_cb   <- sd(d$TotalCBs, na.rm = TRUE)
-  se_cb   <- sd_cb / sqrt(n)
   
   fit <- lm(log(TotalCBs) ~ Year, data = d)
-  
+  # mean(lat)
+  # mean(long)
+  # nutritional cond
+  # dredge --> best model
+
   resid_sd <- sd(residuals(fit))
   slope <- coef(fit)["Year"]
   pct_decline <- (exp(slope) - 1) * 100
@@ -95,7 +98,7 @@ calc_summary <- function(d){
   data.frame(
     N = n,
     Mean = mean_cb,
-    SE = se_cb,
+    SD = sd_cb,
     Residual_SD = resid_sd,
     Sampling_range = paste(min(d$Year), max(d$Year), sep = "-"),
     Annual_decline_pct = pct_decline
