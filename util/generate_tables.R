@@ -3,6 +3,8 @@
 ## CM, OL: 10/02/2023
 ##-------------------------
 
+## Generate the right side of table 1
+
 library(mgcv)
 
 # to accumulate results
@@ -64,3 +66,71 @@ for (i in 1:length(files)) {
 }
 
 write.csv(res, "csv/power_smoothing_hist.csv", row.names = FALSE)
+
+
+## generate the left side of table 1
+df <- readRDS("data.rds")
+
+names(df)
+
+df <- subset(
+  df,
+    Year <= 2017
+)
+
+calc_summary <- function(d){
+  
+  n <- nrow(d)
+  
+  mean_cb <- mean(d$TotalCBs, na.rm = TRUE)
+  sd_cb   <- sd(d$TotalCBs, na.rm = TRUE)
+  se_cb   <- sd_cb / sqrt(n)
+  
+  fit <- lm(log(TotalCBs) ~ Year, data = d)
+  
+  resid_sd <- sd(residuals(fit))
+  slope <- coef(fit)["Year"]
+  pct_decline <- (exp(slope) - 1) * 100
+  
+  data.frame(
+    N = n,
+    Mean = mean_cb,
+    SE = se_cb,
+    Residual_SD = resid_sd,
+    Sampling_range = paste(min(d$Year), max(d$Year), sep = "-"),
+    Annual_decline_pct = pct_decline
+  )
+}
+
+    
+all_uk <- calc_summary(df)
+all_uk$Assessment <- "ALL UK"
+
+au <- split(df, df$HP.AU)
+
+au_table <- do.call(
+  rbind,
+  lapply(names(au), function(name){
+    out <- calc_summary(au[[name]])
+    out$Assessment <- name
+    out
+  })
+)
+
+ospar <- split(df, df$Ospar.AA)
+
+ospar_table <- do.call(
+  rbind,
+  lapply(names(ospar), function(name){
+    out <- calc_summary(ospar[[name]])
+    out$Assessment <- name
+    out
+  })
+)
+
+final_table <- rbind(all_uk, au_table, ospar_table)
+
+rownames(final_table) <- NULL
+
+final_table
+
