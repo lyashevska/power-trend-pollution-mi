@@ -31,7 +31,7 @@ cnames <-
     "Age..yr.",
     "Length",
     "AreaAA",
-    "TotalCBs"
+    "sumCBs1"
   )
 
 data <- data[,cnames]
@@ -48,7 +48,8 @@ data <- data %>%
     HP.AU = AreaAU,
     Ospar.AA = AreaAA,
     Age = Age..yr.,
-    Weight = Body.Weight..kg.
+    Weight = Body.Weight..kg.,
+    TotalCBs = sumCBs1
   )
 
 cat("Final data dim:", dim(data), "\n")
