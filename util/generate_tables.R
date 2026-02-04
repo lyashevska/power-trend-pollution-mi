@@ -3,9 +3,10 @@
 ## CM, OL: 10/02/2023
 ##-------------------------
 
-## Generate the right side of table 1
+# generate the right side of table 1 for publication
 
 library(mgcv)
+library(MuMIn)
 
 # to accumulate results
 res <- NULL
@@ -67,73 +68,106 @@ for (i in 1:length(files)) {
 
 write.csv(res, "csv/power_smoothing_hist.csv", row.names = FALSE)
 
+#################################################################
 
-## generate the left side of table 1
+# generate the left side of table 1 for publication
 df <- readRDS("data.rds")
 
 names(df)
 
+# subset for now to verify results
 df <- subset(
   df,
    Year <= 2017
 )
 
-calc_summary <- function(d){
+options(na.action = "na.fail")
+calc_summary <- function(d) {
+  
+  if (nrow(d) < 5) return(NULL)  # safety for tiny groups
   
   n <- nrow(d)
   
   mean_cb <- mean(d$TotalCBs, na.rm = TRUE)
   sd_cb   <- sd(d$TotalCBs, na.rm = TRUE)
   
-  fit <- lm(log(TotalCBs) ~ Year, data = d)
-  # mean(lat)
-  # mean(long)
-  # nutritional cond
-  # dredge --> best model
+  # -----------------
+  # global model
+  # -----------------
+  global_fit <- lm(
+    log(TotalCBs) ~ Year + Rel.body.wt + Latitude,
+    data = d
+  )
+  
+  # dredge selection
 
-  resid_sd <- sd(residuals(fit))
-  slope <- coef(fit)["Year"]
+  dd <- dredge(global_fit, fixed = "Year")
+  
+  best_mod <- get.models(dd, 1)[[1]]
+  
+  # metrics
+
+  resid_sd <- sd(residuals(best_mod))
+  
+  slope <- coef(best_mod)["Year"]
+  
   pct_decline <- (exp(slope) - 1) * 100
   
-  data.frame(
+  best_formula <- formula(best_mod)
+  
+  best_terms <- attr(terms(best_mod), "term.labels")
+  
+  if (length(best_terms) == 1) {
+    best_model_txt <- "Year"
+  } else {
+    best_model_txt <- paste(best_terms, collapse = " + ")
+  }
+  
+  out <- data.frame(
     N = n,
     Mean = mean_cb,
     SD = sd_cb,
     Residual_SD = resid_sd,
     Sampling_range = paste(min(d$Year), max(d$Year), sep = "-"),
-    Annual_decline_pct = pct_decline
+    Annual_decline_pct = pct_decline,
+    Best_model = best_model_txt
   )
+  
+  rownames(out) <- NULL
+  out
 }
 
-    
+# ALL UK
+
 all_uk <- calc_summary(df)
 all_uk$Assessment <- "ALL UK"
 
-au <- split(df, df$HP.AU)
+# HP.AU 
 
 au_table <- do.call(
   rbind,
-  lapply(names(au), function(name){
-    out <- calc_summary(au[[name]])
-    out$Assessment <- name
+  lapply(split(df, df$HP.AU), function(sub) {
+    out <- calc_summary(sub)
+    out$Assessment <- paste0("AU_", unique(sub$HP.AU))
     out
   })
 )
 
-ospar <- split(df, df$Ospar.AA)
+# OSPAR 
 
 ospar_table <- do.call(
   rbind,
-  lapply(names(ospar), function(name){
-    out <- calc_summary(ospar[[name]])
-    out$Assessment <- name
+  lapply(split(df, df$Ospar.AA), function(sub) {
+    out <- calc_summary(sub)
+    out$Assessment <- paste0("AA_", unique(sub$Ospar.AA))
     out
   })
 )
 
-final_table <- rbind(all_uk, au_table, ospar_table)
+res2 <- rbind(all_uk, au_table, ospar_table)
+rownames(res2) <- NULL
 
-rownames(final_table) <- NULL
+res2
 
-final_table
+write.csv(res2, "csv/table1.csv", row.names = FALSE)
 
