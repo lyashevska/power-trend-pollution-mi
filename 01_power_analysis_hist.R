@@ -11,7 +11,7 @@ library(ggplot2)
 library(MuMIn)
 
 # load prepared data
-data <- readRDS("data.rds")
+data <- readRDS("rds/data.rds")
 
 # load functions
 source("f_detect_trend_hist.R")
