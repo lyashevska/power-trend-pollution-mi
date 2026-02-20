@@ -10,7 +10,7 @@ library(dplyr)
 library(ggplot2)
 library(ggrepel)
 
-df <- read_csv("juveniles.csv") %>%
+df <- read_csv("csv/juveniles.csv", show_col_types = FALSE) %>%
   filter(Year %in% c(2018, 2019)) %>%
   filter(!is.na(Longitude), !is.na(Latitude))
 
@@ -33,7 +33,7 @@ ggplot() +
   
   geom_text_repel(
     data = pts,
-    aes(label = National.Reference, geometry = geometry),
+    aes(label = .data[["National.Reference"]], geometry = geometry),
     stat = "sf_coordinates",
     size = 2.6,
     box.padding = 0.25,
@@ -48,7 +48,7 @@ ggplot() +
     strip.text = element_text(face = "bold")
   )
 
-ggsave("figs/juveniles_2018_2019_map.pdf", width = 7, height = 6)
+ggsave("figs/all_animals_2018_2019.pdf", width = 7, height = 6)
 
 
 

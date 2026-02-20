@@ -1,9 +1,11 @@
+# This script plots all the animals in the dataset, by year
+# Goal is to validate the data
 
 library(sf)
 library(ggplot2)
 
 
-df <- readRDS("data.rds")
+df <- readRDS("rds/data.rds")
 head(df)
 
 pts <- st_as_sf(df,
@@ -15,6 +17,9 @@ uk <- st_read(
 ) |>
   st_transform(4326) |>
   st_simplify(1000)  
+
+# Create figs/by_year directory if it doesn't exist
+dir.create("figs/by_year", showWarnings = FALSE, recursive = TRUE)
 
 plot_year <- function(var, prefix, pts, uk) {
   
