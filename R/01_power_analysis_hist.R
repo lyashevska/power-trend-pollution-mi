@@ -215,7 +215,7 @@ for (i in seq_along(ids)) {
       f_detect_trend_hist(
         nobs_year = all_res$nobs_year[j],
         tailyrs = all_res$tailyrs[j],
-        data = temp,
+        data = data,
         mod = mods[[i]]
       ),
       error = function(e) {
@@ -286,7 +286,7 @@ mods <- lm(
   data = data
 )
 
-beta <- coef(mods)
+beta <- dput(coef(mods))
 nsim <- 1000
 
 cat("\n============================\n")
@@ -318,14 +318,14 @@ for (j in 1:nrow(all_res)) {
     f_detect_trend_hist(
       nobs_year = all_res$nobs_year[j],
       tailyrs = all_res$tailyrs[j],
-      data = temp,
-      mod = mods[[i]]
+      data = data,
+      mod = mods
     ),
     error = function(e) {
       stop(
         paste0(
           "\nERROR DETECTED\n",
-          "Area: ", names(mods)[[i]], "\n",
+          "Area: ", names(mods), "\n",
           "j: ", j, "/", nrow(all_res), "\n",
           "nobs_year: ", all_res$nobs_year[j], "\n",
           "tailyrs: ", all_res$tailyrs[j], "\n",
