@@ -81,10 +81,10 @@ df <- readRDS(here("data/processed/data.rds"))
 names(df)
 
 # subset for now to verify results
-df <- subset(
-  df,
-   Year <= 2017
-)
+#df <- subset(
+#  df,
+#   Year <= 2017
+#)
 
 options(na.action = "na.fail")
 calc_summary <- function(d) {
