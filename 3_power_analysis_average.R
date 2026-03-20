@@ -75,11 +75,9 @@ info <- vector('list', length(ids))
   
   names(mods)[[i]] <- unique(temp$Ospar.AA)
   beta <- coef(mods[[i]])
-  nsim <- 1000
-  
-  # print sigma
-  print(paste("Residual SD (sigma) for", names(mods)[[i]], "=", round(summary(mods[[i]])$sigma, 4)))
-  
+  ##nsim <- 1000
+  nsim <- 100
+  #
   all_res <- expand.grid(
     ## sampling frequency
     nobs_year = seq(2, 20, 2),
@@ -93,7 +91,7 @@ info <- vector('list', length(ids))
   )
   
   for (j in 1:nrow(all_res)) {
-    all_res$detect[j] <- f_detect_trend(
+    all_res$detect[j] <- f_detect_trend_average(
       ## new beta to give required annual % change in intercept
       beta_new = log(1 + all_res$pchange[j]),
       obs_window = all_res$obs_window[j],
