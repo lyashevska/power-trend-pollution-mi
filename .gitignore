@@ -38,6 +38,6 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# data
-*.csv
-*.rds
+# Data and outputs (keep git repo clean)
+data/
+*.xlsx
