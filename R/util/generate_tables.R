@@ -127,7 +127,14 @@ calc_summary <- function(d) {
   } else {
     best_model_txt <- paste(best_terms, collapse = " + ")
   }
-  
+
+  ## extract coefficients 
+  beta_best <- coef(best_mod)
+  beta_all <- coef(global_fit)
+  beta_all[] <- 0
+  beta_all[names(beta)] <- beta_best
+  names(beta_all) <- paste0("beta_", names(beta_all))
+ 
   out <- data.frame(
     N = n,
     Mean = mean_cb,
@@ -137,6 +144,7 @@ calc_summary <- function(d) {
     Annual_decline_pct = pct_decline,
     Best_model = best_model_txt
   )
+   out <- cbind(out, t(as.data.frame(beta_all)))
   
   rownames(out) <- NULL
   out
