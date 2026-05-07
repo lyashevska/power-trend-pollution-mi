@@ -3,6 +3,7 @@ library(dplyr)
 library(purrr)
 library(MuMIn)     # for dredge
 library(glue)
+library(here)
 
 # Make sure dredge uses the right options
 options(na.action = "na.fail")
