@@ -61,6 +61,7 @@ f_plot_power_hist <- function(sum_res,
                               file,
                               area_name,
                               beta = NULL,
+                              include_vline = TRUE,
                               x_breaks = seq(2, 20, by = 2)) {
   sampling_vlines <- c(6, 10, 18)
   if (!is.null(beta)) {
@@ -83,7 +84,6 @@ f_plot_power_hist <- function(sum_res,
     geom_line(aes(color = as.factor(tailyrs))) +
     geom_point() +
     geom_hline(yintercept = 0.8, linetype = "dashed") +
-    geom_vline(xintercept = sampling_vlines, linetype = "dashed") +
     labs(
       title = title,
       x = "Number observations per year",
@@ -92,6 +92,10 @@ f_plot_power_hist <- function(sum_res,
     ) +
     scale_x_continuous(breaks = x_breaks) +
     theme_bw()
+
+  if (include_vline) {
+    plot <- plot + geom_vline(xintercept = sampling_vlines, linetype = "dashed")
+  }
 
   png(file = file)
   print(plot)

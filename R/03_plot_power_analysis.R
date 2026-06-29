@@ -52,14 +52,17 @@ for (f in hist_files) {
     area_name <- "All areas"
     out_file <- here("output/figs/All_hist.png")
     x_breaks <- 1:10
+    include_vline <- FALSE
   } else if (grepl("^ospar_sum_res_hist_", fname)) {
     area_name <- sub("^ospar_sum_res_hist_(.*)\\.rds$", "\\1", fname)
     out_file <- here("output/figs", paste0("Ospar_", gsub("\\s", "_", area_name), "_hist.png"))
     x_breaks <- seq(2, 20, by = 2)
+    include_vline <- TRUE
   } else if (grepl("^hp_sum_res_hist_", fname)) {
     area_name <- sub("^hp_sum_res_hist_(.*)\\.rds$", "\\1", fname)
     out_file <- here("output/figs", paste0("HP_", gsub("\\s", "_", area_name), "_hist.png"))
     x_breaks <- seq(2, 20, by = 2)
+    include_vline <- TRUE
   } else {
     next
   }
@@ -69,6 +72,7 @@ for (f in hist_files) {
     file = out_file,
     area_name = area_name,
     beta = beta,
+    include_vline = include_vline,
     x_breaks = x_breaks
   )
 }
