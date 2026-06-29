@@ -104,6 +104,7 @@ f_plot_power_hist <- function(sum_res,
       geom_label(
         data = label_df,
         aes(x = x, y = y, label = label),
+        inherit.aes = FALSE,
         fill = "white",
         size = 3
       )
