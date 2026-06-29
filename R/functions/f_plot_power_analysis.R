@@ -94,7 +94,19 @@ f_plot_power_hist <- function(sum_res,
     theme_bw()
 
   if (include_vline) {
-    plot <- plot + geom_vline(xintercept = sampling_vlines, linetype = "dashed")
+    label_df <- data.frame(
+      x = sampling_vlines,
+      y = 0.03,
+      label = c("6/yr", "10/yr", "18/yr")
+    )
+    plot <- plot +
+      geom_vline(xintercept = sampling_vlines, linetype = "dashed") +
+      geom_label(
+        data = label_df,
+        aes(x = x, y = y, label = label),
+        fill = "white",
+        size = 3
+      )
   }
 
   png(file = file)
