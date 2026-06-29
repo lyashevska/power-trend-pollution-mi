@@ -11,8 +11,9 @@ library(metR)
 f_plot_power_heatmap <- function(sum_res, title, file) {
   ow.labs <- c("Monitoring for 6 years", "Monitoring for 10 years")
   names(ow.labs) <- c("6", "10")
+  sampling_vlines <- c(6, 10, 18)
   label_df <- data.frame(
-    x = c(30, 50, 100) / 6 + 1,
+    x = sampling_vlines,
     y = rep(-16, 3),
     label = c("6/yr", "10/yr", "18/yr")
   )
@@ -24,7 +25,7 @@ f_plot_power_heatmap <- function(sum_res, title, file) {
     geom_tile() +
     facet_wrap(~ obs_window,
                labeller = labeller(obs_window = ow.labs)) +
-    geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed") +
+    geom_vline(xintercept = sampling_vlines, linetype = "dashed") +
     geom_label(data = label_df,
                aes(x = x, y = y, label = label),
                fill = "white") +
@@ -60,8 +61,8 @@ f_plot_power_hist <- function(sum_res,
                               file,
                               area_name,
                               beta = NULL,
-                              include_vline = TRUE,
                               x_breaks = seq(2, 20, by = 2)) {
+  sampling_vlines <- c(6, 10, 18)
   if (!is.null(beta)) {
     title <- paste0(
       area_name,
@@ -82,6 +83,7 @@ f_plot_power_hist <- function(sum_res,
     geom_line(aes(color = as.factor(tailyrs))) +
     geom_point() +
     geom_hline(yintercept = 0.8, linetype = "dashed") +
+    geom_vline(xintercept = sampling_vlines, linetype = "dashed") +
     labs(
       title = title,
       x = "Number observations per year",
@@ -90,10 +92,6 @@ f_plot_power_hist <- function(sum_res,
     ) +
     scale_x_continuous(breaks = x_breaks) +
     theme_bw()
-
-  if (include_vline) {
-    plot <- plot + geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed")
-  }
 
   png(file = file)
   print(plot)

@@ -9,7 +9,6 @@ library(MuMIn)
 library(here)
 
 # Create output directories if they don't exist
-dir.create(here("output/figs"), showWarnings = FALSE, recursive = TRUE)
 dir.create(here("output/rds"), showWarnings = FALSE, recursive = TRUE)
 
 start_time <- Sys.time()
@@ -18,7 +17,6 @@ data <- readRDS(here("data/processed/data.rds"))
 
 # load functions
 source(here("R/functions/f_detect_trend.R"))
-source(here("R/functions/f_plot_power_analysis.R"))
 
 ###################################
 ## Power analysis per Ospar.AA
@@ -86,14 +84,7 @@ for (i in seq_along(ids)) {
       data = all_res
     )
   sum_res$power <- sum_res$detect / nsim
-  
-  
-  f_plot_power_heatmap(
-    sum_res = sum_res,
-    title = names(mods)[[i]],
-    file = here("output/figs", paste0("Ospar_", gsub("\\s", "_", names(mods)[[i]]), ".png"))
-  )
-  
+
   #  collect results
   info[[i]] <- list(model = summary(mods[[i]]))
   
@@ -163,13 +154,7 @@ for (i in seq_along(ids)) {
       data = all_res
     )
   sum_res$power <- sum_res$detect / nsim
-  
-  f_plot_power_heatmap(
-    sum_res = sum_res,
-    title = names(mods)[[i]],
-    file = here("output/figs", paste0("HP_", gsub("\\s", "_", names(mods)[[i]]), ".png"))
-  )
-  
+
   #  collect results
   info[[i]] <- list(model = summary(mods[[i]]))
   
@@ -220,13 +205,6 @@ sum_res <-
     data = all_res
   )
 sum_res$power <- sum_res$detect / nsim
-
-
-f_plot_power_heatmap(
-  sum_res = sum_res,
-  title = "All areas",
-  file = here("output/figs/All.png")
-)
 
 #  save results
 saveRDS(sum_res, file = here("output/rds/all_sum_res.rds"))
