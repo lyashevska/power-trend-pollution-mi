@@ -5,13 +5,10 @@
 ## OL, CM: 3/8/22
 ##---------------------------
 
-library(ggplot2)
 library(MuMIn)
-library(metR)
 library(here)
 
 # Create output directories if they don't exist
-dir.create(here("output/figs"), showWarnings = FALSE, recursive = TRUE)
 dir.create(here("output/rds"), showWarnings = FALSE, recursive = TRUE)
 
 start_time <- Sys.time()
@@ -87,54 +84,7 @@ for (i in seq_along(ids)) {
       data = all_res
     )
   sum_res$power <- sum_res$detect / nsim
-  
-  
-  png(
-    file = here("output/figs", paste0("Ospar_", gsub("\\s", "_", names(mods)[[i]]), ".png")),
-    height = 8,
-    width = 12,
-    units = "in",
-    res = 400
-  )
-  # new facet label names for obs_window variable
-  ow.labs <- c("Monitoring for 6 years", "Monitoring for 10 years")
-  names(ow.labs) <- c("6", "10")
-  label_df <- data.frame(
-    x = c(30, 50, 100) / 6 + 1,
-    y = rep(-16, 3),
-    label = c("Low", "Medium", "High")
-  )
-  
-  plot <- ggplot(sum_res,
-                 aes(x = nobs_year,
-                     y = pchange * 100,
-                     fill = power)) +
-    geom_tile() +
-    facet_wrap( ~ obs_window,
-                labeller = labeller(obs_window = ow.labs)) +
-    geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed") +
-    geom_label(data = label_df,
-               aes(x = x, y = y, label = label),
-               fill = "white") +
-    
-    labs(title = names(mods)[[i]],
-         x = "Number observations per year",
-         y = "% annual change") +
-    theme_bw() +
-    scale_fill_gradientn(colours = c("lightgray", "red", "darkred")) +
-    geom_contour(aes(z = power),
-                 breaks = c(0.8, 0.9),
-                 colour = "grey") +
-    geom_text_contour(
-      aes(z = power),
-      breaks = c(0.8, 0.9),
-      stroke = 0.2,
-      skip = 0
-    ) +
-    scale_y_continuous(breaks = seq(-15, 15, by = 2))
-  print(plot)
-  dev.off()
-  
+
   #  collect results
   info[[i]] <- list(model = summary(mods[[i]]))
   
@@ -204,53 +154,7 @@ for (i in seq_along(ids)) {
       data = all_res
     )
   sum_res$power <- sum_res$detect / nsim
-  
-  png(
-    file = here("output/figs", paste0("HP_", gsub("\\s", "_", names(mods)[[i]]), ".png")),
-    height = 8,
-    width = 12,
-    units = "in",
-    res = 400
-  )
-  # new facet label names for obs_window variable
-  ow.labs <- c("Monitoring for 6 years", "Monitoring for 10 years")
-  names(ow.labs) <- c("6", "10")
-  label_df <- data.frame(
-    x = c(30, 50, 100) / 6 + 1,
-    y = rep(-16, 3),
-    label = c("Low", "Medium", "High")
-  )
-  
-  plot <- ggplot(sum_res,
-                 aes(x = nobs_year,
-                     y = pchange * 100,
-                     fill = power)) +
-    geom_tile() +
-    facet_wrap( ~ obs_window,
-                labeller = labeller(obs_window = ow.labs)) +
-    geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed") +
-    geom_label(data = label_df,
-               aes(x = x, y = y, label = label),
-               fill = "white") +
-    
-    labs(title = names(mods)[[i]],
-         x = "Number observations per year",
-         y = "% annual change") +
-    theme_bw() +
-    scale_fill_gradientn(colours = c("lightgray", "red", "darkred")) +
-    geom_contour(aes(z = power),
-                 breaks = c(0.8, 0.9),
-                 colour = "grey") +
-    geom_text_contour(
-      aes(z = power),
-      breaks = c(0.8, 0.9),
-      stroke = 0.2,
-      skip = 0
-    ) +
-    scale_y_continuous(breaks = seq(-15, 15, by = 2))
-  print(plot)
-  dev.off()
-  
+
   #  collect results
   info[[i]] <- list(model = summary(mods[[i]]))
   
@@ -301,54 +205,6 @@ sum_res <-
     data = all_res
   )
 sum_res$power <- sum_res$detect / nsim
-
-
-png(
-  file = here("output/figs/All.png"),
-  height = 8,
-  width = 12,
-  units = "in",
-  res = 400
-)
-
-# new facet label names for obs_window variable
-ow.labs <- c("Monitoring for 6 years", "Monitoring for 10 years")
-names(ow.labs) <- c("6", "10")
-label_df <- data.frame(
-  x = c(30, 50, 100) / 6 + 1,
-  y = rep(-16, 3),
-  label = c("Low", "Medium", "High")
-)
-
-plot <- ggplot(sum_res,
-               aes(x = nobs_year,
-                   y = pchange * 100,
-                   fill = power)) +
-  geom_tile() +
-  facet_wrap( ~ obs_window,
-              labeller = labeller(obs_window = ow.labs)) +
-  geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed") +
-  geom_label(data = label_df,
-             aes(x = x, y = y, label = label),
-             fill = "white") +
-  
-  labs(title = "All areas",
-       x = "Number observations per year",
-       y = "% annual change") +
-  theme_bw() +
-  scale_fill_gradientn(colours = c("lightgray", "red", "darkred")) +
-  geom_contour(aes(z = power),
-               breaks = c(0.8, 0.9),
-               colour = "grey") +
-  geom_text_contour(
-    aes(z = power),
-    breaks = c(0.8, 0.9),
-    stroke = 0.2,
-    skip = 0
-  ) +
-  scale_y_continuous(breaks = seq(-15, 15, by = 2))
-print(plot)
-dev.off()
 
 #  save results
 saveRDS(sum_res, file = here("output/rds/all_sum_res.rds"))

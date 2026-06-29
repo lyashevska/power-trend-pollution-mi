@@ -7,14 +7,12 @@
 ## OL, CM: 3/8/22
 ##---------------------------
 
-library(ggplot2)
 library(MuMIn)
 library(here)
 
 set.seed(123)
 
 # Create output directories if they don't exist
-dir.create(here("output/figs"), showWarnings = FALSE, recursive = TRUE)
 dir.create(here("output/rds"), showWarnings = FALSE, recursive = TRUE)
 
 # load prepared data
@@ -113,38 +111,12 @@ for (i in seq_along(ids)) {
     data = all_res
   )
   sum_res$power <- sum_res$detect / nsim
-  
-  png(file = here("output/figs", paste0("Ospar_", gsub("\\s", "_", names(mods)[[i]]), "_hist.png")))
-  
-  plot <- ggplot(
-    sum_res,
-    aes(
-      x = nobs_year,
-      y = power,
-      group = tailyrs
-    )
-  ) +
-    geom_line(aes(color = as.factor(tailyrs))) +
-    geom_point() +
-    geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed") +
-    geom_hline(yintercept = 0.8, linetype = "dashed") +
-    labs(
-      title = paste0(
-        names(mods)[[i]],
-        ifelse(sign(beta)["Year"] == -1, ", negative trend", ", positive trend")
-      ),
-      x = "Number observations per year",
-      y = "Power to detect",
-      color = "Number of years"
-    ) +
-    theme_bw()
-  print(plot)
-  dev.off()
-  
+
   # collect results
   info[[i]] <- list(model = summary(mods[[i]]))
-  
-  # save results
+
+  # save results (beta stored for plot titles in 03_plot_power_analysis.R)
+  attr(sum_res, "beta") <- beta
   saveRDS(
     sum_res,
     file = here("output/rds", paste0("ospar_sum_res_hist_", names(mods)[[i]], ".rds"))
@@ -239,38 +211,12 @@ for (i in seq_along(ids)) {
     data = all_res
   )
   sum_res$power <- sum_res$detect / nsim
-  
-  png(file = here("output/figs", paste0("HP_", gsub("\\s", "_", names(mods)[[i]]), "_hist.png")))
-  
-  plot <- ggplot(
-    sum_res,
-    aes(
-      x = nobs_year,
-      y = power,
-      group = tailyrs
-    )
-  ) +
-    geom_line(aes(color = as.factor(tailyrs))) +
-    geom_point() +
-    geom_vline(xintercept = c(30, 50, 100) / 6, linetype = "dashed") +
-    geom_hline(yintercept = 0.8, linetype = "dashed") +
-    labs(
-      title = paste0(
-        names(mods)[[i]],
-        ifelse(sign(beta)["Year"] == -1, ", negative trend", ", positive trend")
-      ),
-      x = "Number observations per year",
-      y = "Power to detect",
-      color = "Number of years"
-    ) +
-    theme_bw()
-  print(plot)
-  dev.off()
-  
+
   # collect results
   info[[i]] <- list(model = summary(mods[[i]]))
-  
-  # save results
+
+  # save results (beta stored for plot titles in 03_plot_power_analysis.R)
+  attr(sum_res, "beta") <- beta
   saveRDS(
     sum_res,
     file = here("output/rds", paste0("hp_sum_res_hist_", names(mods)[[i]], ".rds"))
@@ -343,29 +289,6 @@ sum_res <- aggregate(
   data = all_res
 )
 sum_res$power <- sum_res$detect / nsim
-
-png(file = here("output/figs/All_hist.png"))
-
-plot <- ggplot(
-  sum_res,
-  aes(
-    x = nobs_year,
-    y = power,
-    group = tailyrs
-  )
-) +
-  geom_line(aes(color = as.factor(tailyrs))) +
-  geom_point() +
-  geom_hline(yintercept = 0.8, linetype = "dashed") +
-  labs(
-    title = "All areas",
-    x = "Number observations per year",
-    y = "Power to detect",
-    color = "Number of years"
-  ) +
-  theme_bw()
-print(plot)
-dev.off()
 
 # save results
 saveRDS(sum_res, file = here("output/rds/all_sum_res_hist.rds"))
